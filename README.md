@@ -3,7 +3,7 @@
 </p>
 
 # 🗳️ CyberElect
-**Stops the f*cking dictatorship**
+**Stops the f*ckin' dictatorship**
 
 ## 📜 Description
 CyberElect is a pioneering platform aimed at protecting electoral integrity using innovative cybersecurity and open-monitoring systems. Our system uses blockchain technology, cryptographic authentication, and real-time analysis to validate votes being correctly counted and electoral processes being immune to tampering.
