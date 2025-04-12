@@ -237,7 +237,7 @@ bool VotingSystem::startElection(string electionId) {
         
         while (getline(inFile, line)) {
             if (lineCount == 6) {  // Status line
-                if (line == "Pending") {
+                if (line == "Inactive") {
                     outFile << "Active" << endl;
                     success = true;
                 } else {
@@ -259,7 +259,7 @@ bool VotingSystem::startElection(string electionId) {
             return true;
         } else {
             remove(tempFile.c_str());
-            cout << "\nError: Election is not in Pending state!" << endl;
+            cout << "\nError: Election is not in Inactive state!" << endl;
             return false;
         }
     }
@@ -313,7 +313,7 @@ bool VotingSystem::endElection(string electionId) {
     return false;
 }
 
-bool VotingSystem::viewResults(string electionId) {
+void VotingSystem::viewResults(string electionId) {
     string filename = "data/elections/" + electionId + ".txt";
     ifstream file(filename);
     
@@ -332,25 +332,40 @@ bool VotingSystem::viewResults(string electionId) {
         file >> candidateCount;
         file.ignore();
         
-        cout << "\n" << type << " Election Results for " << name;
+        cout << "\nElection Results:" << endl;
+        cout << "----------------" << endl;
+        cout << "Election: " << name << endl;
+        cout << "Type: " << type << endl;
         if (!region.empty()) {
-            cout << " (" << region << ")";
+            cout << "Region: " << region << endl;
         }
-        cout << "\n" << string(40, '-') << endl;
+        cout << "Status: " << status << endl;
+        
+        if (status != "Ended") {
+            cout << "\nResults are only available after the election has ended." << endl;
+            file.close();
+            return;
+        }
+        
+        cout << "\nCandidates and Votes:" << endl;
+        cout << "-------------------" << endl;
         
         for (int i = 0; i < candidateCount; i++) {
-            string candidateName, party;
-            int votes;
-            
+            string candidateName, partyAffiliation, votes;
             getline(file, candidateName);
-            getline(file, party);
-            file >> votes;
-            file.ignore();
+            getline(file, partyAffiliation);
+            getline(file, votes);
             
-            cout << candidateName << " (" << party << "): " << votes << " votes" << endl;
+            cout << "\nCandidate " << (i + 1) << ":" << endl;
+            cout << "Name: " << candidateName << endl;
+            cout << "Party: " << partyAffiliation << endl;
+            cout << "Votes: " << votes << endl;
+            cout << string(20, '-') << endl;
         }
         
         file.close();
+    } else {
+        cout << "Election not found!" << endl;
     }
 }
 
@@ -565,7 +580,7 @@ bool VotingSystem::castVote(string electionId, string candidateId) {
     
     if (voteRecorded) {
         // Record that this voter has voted
-        string voterFile = "data/voters/" + dynamic_cast<Voter*>(currentUser)->getId() + ".txt";
+        string voterFile = "data/voters/" + dynamic_cast<Voter*>(currentUser)->getID() + ".txt";
         ofstream voteRecord(voterFile, ios::app);
         if (voteRecord.is_open()) {
             voteRecord << electionId << endl;

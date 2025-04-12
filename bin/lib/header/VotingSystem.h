@@ -10,9 +10,6 @@ private:
     User* currentUser;
     ElectionManager electionManager;
     
-    // Helper function to display election information
-    void displayElectionInfo(const std::string& electionId);
-
 public:
     VotingSystem();
     ~VotingSystem();
@@ -30,6 +27,9 @@ public:
     void viewAllElections();
     void viewElections();
     void displayRunningElections();
+    
+    // Helper function to display election information
+    void displayElectionInfo(const std::string& electionId);
     
     bool castVote(std::string electionId, std::string candidateId);
     bool hasVoted(std::string electionId);

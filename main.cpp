@@ -12,8 +12,9 @@ void displayMainMenu() {
     cout << "===================" << endl;
     cout << "1. Login as Voter" << endl;
     cout << "2. Login as Administrator" << endl;
-    cout << "3. Running Elections Status" << endl;
-    cout << "4. Exit" << endl;
+    cout << "3. Register" << endl;
+    cout << "4. Running Elections Status" << endl;
+    cout << "5. Exit" << endl;
     cout << "Enter your choice: ";
 }
 
@@ -35,17 +36,36 @@ void voterMenu() {
                 votingSystem.viewElections();
                 break;
             case 2: {
-                string electionId, candidateId;
-                cout << "Enter Election ID: ";
+                // First show active elections
+                cout << "\nAvailable Elections:" << endl;
+                cout << "===================" << endl;
+                votingSystem.displayRunningElections();
+                
+                string electionId;
+                cout << "\nEnter Election ID (or 'back' to return to menu): ";
                 getline(cin, electionId);
+                
+                if (electionId == "back") {
+                    break;
+                }
                 
                 if (votingSystem.hasVoted(electionId)) {
                     cout << "You have already voted in this election." << endl;
                     break;
                 }
                 
-                cout << "Enter Candidate ID: ";
+                // Show election details again with candidate list
+                cout << "\nElection Details:" << endl;
+                cout << "================" << endl;
+                votingSystem.displayElectionInfo(electionId);
+                
+                string candidateId;
+                cout << "\nEnter Candidate ID (or 'back' to return to menu): ";
                 getline(cin, candidateId);
+                
+                if (candidateId == "back") {
+                    break;
+                }
                 
                 if (votingSystem.castVote(electionId, candidateId)) {
                     cout << "Vote cast successfully!" << endl;
@@ -156,8 +176,12 @@ void adminMenu() {
                 break;
             }
             case 5: {
+                cout << "\nAvailable Elections:" << endl;
+                cout << "-------------------" << endl;
+                votingSystem.viewAllElections();
+                
                 string electionId;
-                cout << "Enter Election ID: ";
+                cout << "\nEnter Election ID: ";
                 getline(cin, electionId);
                 votingSystem.viewResults(electionId);
                 break;
@@ -174,14 +198,82 @@ void adminMenu() {
     }
 }
 
+void registrationMenu() {
+    while (true) {
+        cout << "\nRegistration Menu" << endl;
+        cout << "=================" << endl;
+        cout << "1. Register as Voter" << endl;
+        cout << "2. Register as Administrator" << endl;
+        cout << "3. Back to Main Menu" << endl;
+        cout << "Enter your choice: ";
+
+        int choice;
+        cin >> choice;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        string username, password, name;
+        bool success = false;
+
+        switch (choice) {
+            case 1:
+                cout << "\nVoter Registration" << endl;
+                cout << "=================" << endl;
+                cout << "Enter username: ";
+                getline(cin, username);
+                cout << "Enter password: ";
+                getline(cin, password);
+                cout << "Enter full name: ";
+                getline(cin, name);
+
+                success = votingSystem.registerVoter(username, password, name);
+                if (success) {
+                    cout << "Voter registered successfully!" << endl;
+                } else {
+                    cout << "Failed to register voter." << endl;
+                }
+                break;
+
+            case 2:
+                cout << "\nAdministrator Registration" << endl;
+                cout << "========================" << endl;
+                cout << "Enter username: ";
+                getline(cin, username);
+                cout << "Enter password: ";
+                getline(cin, password);
+                cout << "Enter full name: ";
+                getline(cin, name);
+
+                success = votingSystem.registerAdmin(username, password, name);
+                if (success) {
+                    cout << "Administrator registered successfully!" << endl;
+                } else {
+                    cout << "Failed to register administrator." << endl;
+                }
+                break;
+
+            case 3:
+                return;
+
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+}
+
 int main() {
+    // Create necessary directories
+    system("mkdir data 2>nul");
+    system("mkdir data\\elections 2>nul");
+    system("mkdir data\\voters 2>nul");
+    system("mkdir data\\admins 2>nul");
+
     while (true) {
         displayMainMenu();
         
         int choice;
         cin >> choice;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
+        
         switch (choice) {
             case 1: {
                 string username, password;
@@ -191,9 +283,10 @@ int main() {
                 getline(cin, password);
                 
                 if (votingSystem.loginUser(username, password, "voter")) {
+                    cout << "Login successful!" << endl;
                     voterMenu();
                 } else {
-                    cout << "Login failed. Please check your credentials." << endl;
+                    cout << "Invalid credentials!" << endl;
                 }
                 break;
             }
@@ -205,16 +298,20 @@ int main() {
                 getline(cin, password);
                 
                 if (votingSystem.loginUser(username, password, "admin")) {
+                    cout << "Login successful!" << endl;
                     adminMenu();
                 } else {
-                    cout << "Login failed. Please check your credentials." << endl;
+                    cout << "Invalid credentials!" << endl;
                 }
                 break;
             }
             case 3:
-                votingSystem.displayRunningElections();
+                registrationMenu();
                 break;
             case 4:
+                votingSystem.displayRunningElections();
+                break;
+            case 5:
                 cout << "Thank you for using the Online Voting System!" << endl;
                 return 0;
             default:
