@@ -60,18 +60,22 @@ Check the [Releases](http://github.com/HaseebIqbal1199/CyberElect/releases) sect
    ```
 4. Run the project:
    ```bash
-   if ($?) { g++ source.cpp -o source } ; if ($?) { .\source }
+   g++ main.cpp bin/lib/func/*.cpp -o OnlineVotingSystem.exe -I.
+   ```
+   OR
+    ```bash
+   ./build.bat
    ```
    OR
    use **Code Runner** if you are non techy person.
 
 ## 👥 Team
 - **Muhammad Haseeb Iqbal** - contributor
-- ***Rafeeqi*** - contributor
-- ***Chacha*** - contributor
+- ***Mian Rafaqat*** - contributor
+- ***Rehan Ali*** - contributor
 
 ## ⏳ Deadline
 - Project completion deadline: **(20/04/2025)**
 
 ## ©️ Copyright
-© 2025 Your ✊ gang. All Rights Reserved.
+© 2025 Your 🐘 gang. All Rights Reserved.
