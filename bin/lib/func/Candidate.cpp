@@ -1,3 +1,4 @@
+// BY REHAN
 #include "../header/Candidate.h"
 #include <iostream>
 #include <fstream>
