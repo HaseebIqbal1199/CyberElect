@@ -1,4 +1,4 @@
-# by Rafaqat, Haseeb, Rehan
+// # by Rafaqat, Haseeb, Rehan
 #include "../header/VotingSystem.h"
 #include <iostream>
 #include <fstream>

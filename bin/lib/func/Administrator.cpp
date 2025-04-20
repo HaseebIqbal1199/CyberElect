@@ -1,4 +1,4 @@
-# by Rafaqat
+// # by Rafaqat
 #include "../header/Administrator.h"
 #include <iostream>
 #include <fstream>
