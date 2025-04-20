@@ -1,3 +1,4 @@
+// BY REHAN
 #ifndef CANDIDATE_H
 #define CANDIDATE_H
 
