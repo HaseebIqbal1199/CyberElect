@@ -50,8 +50,7 @@ static std::tuple<int, int, int> calculateRemainingTime(const std::string& endDa
     char dash1, dash2;
     std::stringstream ss(endDate);
     ss >> endYear >> dash1 >> endMonth >> dash2 >> endDay;
-    
-    // Get current time
+      // Get current time
     time_t now = time(nullptr);
     tm* localTime = localtime(&now);
     int currentYear = localTime->tm_year + 1900;
@@ -65,6 +64,7 @@ static std::tuple<int, int, int> calculateRemainingTime(const std::string& endDa
     // Assuming end time is at end of day (23:59:59)
     int totalDays = 0;
     
+    // Check if the end date is in the future
     if (endYear > currentYear || 
         (endYear == currentYear && endMonth > currentMonth) ||
         (endYear == currentYear && endMonth == currentMonth && endDay > currentDay)) {
@@ -123,8 +123,7 @@ static std::tuple<int, int, int> calculateRemainingTime(const std::string& endDa
         if (totalSeconds < 0) {
             totalSeconds += 60;
             totalMinutes--;
-        }
-        if (totalMinutes < 0) {
+        }        if (totalMinutes < 0) {
             totalMinutes += 60;
             totalHours--;
         }
@@ -132,7 +131,8 @@ static std::tuple<int, int, int> calculateRemainingTime(const std::string& endDa
         // Return hours, minutes, and seconds remaining
         return std::make_tuple(totalHours, totalMinutes, totalSeconds);
     }
-      // If end date is today or in the past, return 0
+    
+    // If end date is today or in the past, return 0
     return std::make_tuple(0, 0, 0);
 }
 
@@ -160,19 +160,6 @@ static std::string getCurrentTime() {
        << std::setfill('0') << std::setw(2) << localTime->tm_sec;
     
     return ss.str();
-}
-
-// Helper function to update remaining time display
-static void updateRemainingTimeDisplay(const std::string& electionId, const std::string& endDate) {
-    auto [hours, minutes, seconds] = calculateRemainingTime(endDate);
-    
-    std::cout << "\rCurrent Time: " << getCurrentTime() 
-              << " | Remaining: " << std::setfill('0') << std::setw(2) << hours << ":" 
-              << std::setfill('0') << std::setw(2) << minutes << ":" 
-              << std::setfill('0') << std::setw(2) << seconds << " " << std::flush;
-              
-    // Sleep for 1 second
-    Sleep(1000);
 }
 
 VotingSystem::VotingSystem() : currentUser(nullptr) {}
