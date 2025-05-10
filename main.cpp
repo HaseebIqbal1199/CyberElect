@@ -110,16 +110,17 @@ string getStringInput(const string& prompt) {
 
 void displayMainMenu() {
     system("cls"); // Clear screen for better visuals
-    
-    // Display cool cybersecurity-themed banner
+      // Display cool cybersecurity-themed banner
     setColor(LIGHTCYAN);
     cout << endl;
-    printCentered(" ██████╗██╗   ██╗██████╗ ███████╗██████╗ ███████╗██╗     ███████╗ ██████╗████████╗", 100);
-    printCentered("██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗██╔════╝██║     ██╔════╝██╔════╝╚══██╔══╝", 100);
-    printCentered("██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝█████╗  ██║     █████╗  ██║        ██║   ", 100);
-    printCentered("██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗██╔══╝  ██║     ██╔══╝  ██║        ██║   ", 100);
-    printCentered("╚██████╗   ██║   ██████╔╝███████╗██║  ██║███████╗███████╗███████╗╚██████╗   ██║   ", 100);
-    printCentered(" ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ", 100);
+    printCentered(" .d8888b. Y88b   d88P 8888888b.  8888888888 8888888b.  8888888888 888      8888888888  .d8888b. 88888888888 ", 100);
+    printCentered("d88P  Y88b Y88b d88P  888   Y88b 888        888   Y88b 888        888      888        d88P  Y88b    888     ", 100);
+    printCentered("888    888  Y88o88P   888    888 888        888    888 888        888      888        888    888    888     ", 100);
+    printCentered("888          Y888P    888   d88P 8888888    888   d88P 8888888    888      8888888    888           888     ", 100);
+    printCentered("888           888     8888888P\"  888        8888888P\"  888        888      888        888           888     ", 100);
+    printCentered("888    888    888     888 T88b   888        888 T88b   888        888      888        888    888    888     ", 100);
+    printCentered("Y88b  d88P    888     888  T88b  888        888  T88b  888        888      888        Y88b  d88P    888     ", 100);
+    printCentered(" \"Y8888P\"     888     888   T88b 8888888888 888   T88b 8888888888 88888888 8888888888  \"Y8888P\"     888     ", 100);
     resetColor();
     
     cout << endl;
