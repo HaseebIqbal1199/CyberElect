@@ -4,12 +4,14 @@
 #include <fstream>
 #include <sstream>
 
-Voter::Voter() : hasVoted(false), votedElectionsCount(0) {
+Voter::Voter() : hasVoted(false), votedElectionsCount(0), cnic(""), dateOfBirth(""), city("") {
     role = "voter";
 }
 
-Voter::Voter(std::string username, std::string password, std::string name, std::string id)
-    : User(username, password, name, id, "voter"), hasVoted(false), votedElectionsCount(0) {}
+Voter::Voter(std::string username, std::string password, std::string name, std::string id,
+             std::string cnic, std::string dob, std::string city)
+    : User(username, password, name, id, "voter"), hasVoted(false), votedElectionsCount(0),
+      cnic(cnic), dateOfBirth(dob), city(city) {}
 
 bool Voter::login() {
     std::cout << "Voter " << getName() << " logged in successfully." << std::endl;
@@ -62,7 +64,7 @@ void Voter::saveToFile() {
             if (fileId == id) {
                 // Found the user, update their record
                 outFile << id << "," << getUsername() << "," << getPassword() << "," 
-                       << getName() << "," << getRole() << "," << votedElectionsCount;
+                       << getName() << "," << getRole() << "," << cnic << "," << dateOfBirth << "," << city << "," << votedElectionsCount;
                 
                 for (int i = 0; i < votedElectionsCount; i++) {
                     outFile << "," << votedElections[i];
@@ -78,7 +80,7 @@ void Voter::saveToFile() {
         // If user doesn't exist, add them to the file
         if (!userExists) {
             outFile << id << "," << getUsername() << "," << getPassword() << "," 
-                   << getName() << "," << getRole() << "," << votedElectionsCount;
+                   << getName() << "," << getRole() << "," << cnic << "," << dateOfBirth << "," << city << "," << votedElectionsCount;
             
             for (int i = 0; i < votedElectionsCount; i++) {
                 outFile << "," << votedElections[i];
@@ -97,7 +99,7 @@ void Voter::saveToFile() {
         std::ofstream newFile("data/Users/Creds.txt");
         if (newFile.is_open()) {
             newFile << id << "," << getUsername() << "," << getPassword() << "," 
-                   << getName() << "," << getRole() << "," << votedElectionsCount;
+                   << getName() << "," << getRole() << "," << cnic << "," << dateOfBirth << "," << city << "," << votedElectionsCount;
             
             for (int i = 0; i < votedElectionsCount; i++) {
                 newFile << "," << votedElections[i];
@@ -118,7 +120,8 @@ void Voter::loadFromFile(std::string userId) {
         while (std::getline(file, line)) {
             std::stringstream ss(line);
             std::string fileId;
-            std::getline(ss, fileId, ',');            if (fileId == userId) {
+            std::getline(ss, fileId, ',');            
+            if (fileId == userId) {
                 // Found the user
                 found = true;
                 id = fileId;
@@ -126,7 +129,13 @@ void Voter::loadFromFile(std::string userId) {
                 std::getline(ss, password, ',');
                 std::getline(ss, name, ',');
                 std::getline(ss, role, ',');
-                  std::string votedCountStr;
+                
+                // Get new fields
+                std::getline(ss, cnic, ',');
+                std::getline(ss, dateOfBirth, ',');
+                std::getline(ss, city, ',');
+                  
+                std::string votedCountStr;
                 std::getline(ss, votedCountStr, ',');
                 
                 // Parse votedElectionsCount safely without using stoi

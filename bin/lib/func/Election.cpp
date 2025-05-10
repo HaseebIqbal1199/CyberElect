@@ -155,13 +155,13 @@ void Election::saveData(std::ofstream& file) {
     file << endDate << std::endl;
     file << (isActive ? "Active" : "Inactive") << std::endl;
     file << candidateCount << std::endl;
-    
-    // Save candidate data
+      // Save candidate data
     for (int i = 0; i < candidateCount; i++) {
         if (candidates[i] != nullptr) {
             file << candidates[i]->getCandidateId() << std::endl;
             file << candidates[i]->getName() << std::endl;
             file << candidates[i]->getPartyAffiliation() << std::endl;
+            file << candidates[i]->getPartySymbol() << std::endl;
             file << candidates[i]->getVoteCount() << std::endl;
         }
     }
@@ -187,16 +187,17 @@ void Election::loadData(std::ifstream& file) {
             candidateCount = candidateCount * 10 + (c - '0');
         }
     }
-    
-    // Load candidate data
+      // Load candidate data
     for (int i = 0; i < candidateCount; i++) {
-        std::string candId, name, party, votes;
+        std::string candId, name, party, symbol, votes;
         
         std::getline(file, candId);
         std::getline(file, name);
         std::getline(file, party);
+        std::getline(file, symbol);
         std::getline(file, votes);
-          candidates[i] = new Candidate(candId, name, party);
+        
+        candidates[i] = new Candidate(candId, name, party, symbol);
         
         // Set vote count safely without using stoi
         int voteCount = 0;

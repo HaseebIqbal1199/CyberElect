@@ -1,0 +1,237 @@
+classDiagram
+    %% User hierarchy
+    User <|-- Voter
+    User <|-- Administrator
+    
+    %% Election hierarchy
+    Election <|-- LocalElection
+    Election <|-- RegionalElection
+    Election <|-- NationalElection
+    
+    %% Composition relationships
+    Election o-- "0..*" Candidate
+    ElectionManager o-- "0..*" Election
+    VotingSystem o-- ElectionManager
+    VotingSystem o-- "0..1" User
+    
+    %% Association relationships
+    Voter --> Election : casts votes in
+    Administrator --> Election : manages
+    
+    %% User class
+    class User {
+        #username: string
+        #password: string
+        #name: string
+        #id: string
+        #role: string
+        
+        +User()
+        +User(username: string, password: string, name: string, id: string, role: string)
+        +~User()
+        +getUsername(): string
+        +getPassword(): string
+        +getName(): string
+        +getID(): string
+        +getRole(): string
+        +authenticate(inputUsername: string, inputPassword: string): bool
+        +login(): bool*
+        +saveToFile(): void*
+        +loadFromFile(userId: string): void*
+    }
+    
+    %% Voter class
+    class Voter {
+        -hasVoted: bool
+        -votedElections[10]: string
+        -votedElectionsCount: int
+        -cnic: string
+        -dateOfBirth: string
+        -city: string
+        
+        +Voter()
+        +Voter(username: string, password: string, name: string, id: string, cnic: string, dob: string, city: string)
+        +login(): bool
+        +viewElections(): void
+        +castVote(electionId: string, candidateId: string): bool
+        +checkVoteStatus(electionId: string): bool
+        +saveToFile(): void
+        +loadFromFile(userId: string): void
+        +getCNIC(): string
+        +getDateOfBirth(): string
+        +getCity(): string
+        +setCNIC(newCNIC: string): void
+        +setDateOfBirth(newDOB: string): void
+        +setCity(newCity: string): void
+        +hasVotedInElection(electionId: string): bool
+        +addVotedElection(electionId: string): void
+    }
+    
+    %% Administrator class
+    class Administrator {
+        +Administrator()
+        +Administrator(username: string, password: string, name: string, id: string)
+        +login(): bool
+        +createElection(type: string): void
+        +addCandidate(electionId: string, candidateName: string, partyAffiliation: string): void
+        +viewResults(electionId: string): void
+        +viewAllElections(): void
+        +saveToFile(): void
+        +loadFromFile(userId: string): void
+    }
+    
+    %% Candidate class
+    class Candidate {
+        -candidateId: string
+        -name: string
+        -partyAffiliation: string
+        -partySymbol: string
+        -voteCount: int
+        
+        +Candidate()
+        +Candidate(id: string, name: string, party: string, symbol: string)
+        +getCandidateId(): string
+        +getName(): string
+        +getPartyAffiliation(): string
+        +getPartySymbol(): string
+        +getVoteCount(): int
+        +setPartySymbol(symbol: string): void
+        +incrementVotes(): void
+        +displayInfo(): void
+        +saveToFile(electionId: string): void
+        +loadFromFile(electionId: string, candidateId: string): void
+    }
+    
+    %% Election class
+    class Election {
+        #electionId: string
+        #electionName: string
+        #startDate: string
+        #endDate: string
+        #isActive: bool
+        #candidateCount: int
+        #MAX_CANDIDATES: int
+        #candidates[MAX_CANDIDATES]: Candidate*
+        
+        +Election()
+        +Election(id: string, name: string, start: string, end: string)
+        +~Election()
+        +getElectionId(): string
+        +getElectionName(): string
+        +getStartDate(): string
+        +getEndDate(): string
+        +getIsActive(): bool
+        +startElection(): bool
+        +endElection(): bool
+        +addCandidate(name: string, partyAffiliation: string): bool
+        +displayCandidates(): void
+        +getCandidate(index: int): Candidate*
+        +getCandidateById(candidateId: string): Candidate*
+        +getCandidateCount(): int
+        +calculateResults(): void*
+        +displayResults(): void*
+        +saveToFile(): void
+        +loadFromFile(electionId: string): void
+        +getType(): string*
+        +saveData(file: ofstream&): void
+        +loadData(file: ifstream&): void
+        +candidateExists(candidateId: string): bool
+    }
+    
+    %% LocalElection class
+    class LocalElection {
+        -locality: string
+        
+        +LocalElection()
+        +LocalElection(id: string, name: string, start: string, end: string, locality: string)
+        +calculateResults(): void
+        +displayResults(): void
+        +getType(): string
+        +getLocality(): string
+        +setLocality(loc: string): void
+    }
+    
+    %% RegionalElection class
+    class RegionalElection {
+        -region: string
+        
+        +RegionalElection()
+        +RegionalElection(id: string, name: string, start: string, end: string, region: string)
+        +calculateResults(): void
+        +displayResults(): void
+        +getType(): string
+        +getRegion(): string
+        +setRegion(reg: string): void
+    }
+    
+    %% NationalElection class
+    class NationalElection {
+        -country: string
+        -regions: int
+        
+        +NationalElection()
+        +NationalElection(id: string, name: string, start: string, end: string, country: string, regions: int)
+        +calculateResults(): void
+        +displayResults(): void
+        +getType(): string
+        +getCountry(): string
+        +getRegions(): int
+        +setCountry(c: string): void
+        +setRegions(r: int): void
+    }
+    
+    %% ElectionManager class
+    class ElectionManager {
+        -MAX_ELECTIONS: int
+        -elections[MAX_ELECTIONS]: Election*
+        -electionCount: int
+        -updateElectionFile(election: Election*): void
+        
+        +ElectionManager()
+        +~ElectionManager()
+        +createElection(type: string, name: string, start: string, end: string, region: string, regions: int): bool
+        +displayActiveElections(): void
+        +displayAllElections(): void
+        +getElection(electionId: string): Election*
+        +getElectionById(electionId: string): Election*
+        +addCandidateToElection(electionId: string, name: string, party: string, symbol: string): bool
+        +viewElectionResults(electionId: string): void
+        +loadAllElections(): void
+        +electionExists(electionId: string): bool
+        +getRunningElectionIds(): vector~string~
+        +getAllElectionIds(): vector~string~
+    }
+    
+    %% VotingSystem class
+    class VotingSystem {
+        -currentUser: User*
+        -electionManager: ElectionManager
+        
+        +VotingSystem()
+        +~VotingSystem()
+        +registerVoter(username: string, password: string, name: string, cnic: string, dob: string, city: string): bool
+        +registerAdmin(username: string, password: string, name: string): bool
+        +loginUser(username: string, password: string, role: string): bool
+        +logout(): void
+        +createElection(type: string, name: string, start: string, end: string, region: string, regions: int): bool
+        +startElection(electionId: string): bool
+        +endElection(electionId: string): bool
+        +addCandidate(electionId: string, name: string, partyAffiliation: string, partySymbol: string): bool
+        +viewResults(electionId: string): void
+        +viewAllElections(): void
+        +viewElections(): void
+        +displayRunningElections(): void        +displayElectionInfo(electionId: string): void
+        +displayElectionSummary(electionId: string): void
+        +displayCandidateSummary(electionId: string, candidateIndex: int): void
+        +displayLiveCountdown(electionId: string, seconds: int): void
+        +getRunningElectionIds(): vector~string~
+        +getAllElectionIds(): vector~string~
+        +getCandidateIndices(electionId: string): vector~int~
+        +castVote(electionId: string, candidateId: string): bool
+        +hasVoted(electionId: string): bool
+    }
+
+    %% Notes with UML Notation
+    note for User "Abstract base class with pure virtual methods"
+    note for Election "Abstract base class with template pattern"
+    note for VotingSystem "Main system controller class"

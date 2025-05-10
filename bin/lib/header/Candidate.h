@@ -9,17 +9,20 @@ private:
     std::string candidateId;
     std::string name;
     std::string partyAffiliation;
+    std::string partySymbol;
     int voteCount;
 
 public:
     Candidate();
-    Candidate(std::string id, std::string name, std::string party);
+    Candidate(std::string id, std::string name, std::string party, std::string symbol = "");
 
     std::string getCandidateId() const;
     std::string getName() const;
     std::string getPartyAffiliation() const;
+    std::string getPartySymbol() const;
     int getVoteCount() const;
     
+    void setPartySymbol(const std::string& symbol);
     void incrementVotes();
     void displayInfo() const;
     void saveToFile(std::string electionId);

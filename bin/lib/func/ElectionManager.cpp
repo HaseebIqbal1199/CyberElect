@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iomanip>
+#include <ctime>
 
 ElectionManager::ElectionManager() : electionCount(0) {
     for (int i = 0; i < MAX_ELECTIONS; i++) {
@@ -49,6 +51,18 @@ bool ElectionManager::createElection(std::string type, std::string name, std::st
 }
 
 void ElectionManager::displayActiveElections() {
+    // Get current system time
+    time_t now = time(nullptr);
+    tm* localTime = localtime(&now);
+    
+    std::stringstream ss;
+    ss << (localTime->tm_year + 1900) << "-" 
+       << std::setfill('0') << std::setw(2) << (localTime->tm_mon + 1) << "-" 
+       << std::setfill('0') << std::setw(2) << localTime->tm_mday;
+    
+    std::string currentDate = ss.str();
+    std::cout << "\nCurrent Date: " << currentDate << std::endl;
+    
     std::cout << "\nActive Elections:" << std::endl;
     std::cout << "----------------" << std::endl;
     
@@ -61,6 +75,18 @@ void ElectionManager::displayActiveElections() {
 }
 
 void ElectionManager::displayAllElections() {
+    // Get current system time
+    time_t now = time(nullptr);
+    tm* localTime = localtime(&now);
+    
+    std::stringstream ss;
+    ss << (localTime->tm_year + 1900) << "-" 
+       << std::setfill('0') << std::setw(2) << (localTime->tm_mon + 1) << "-" 
+       << std::setfill('0') << std::setw(2) << localTime->tm_mday;
+    
+    std::string currentDate = ss.str();
+    std::cout << "\nCurrent Date: " << currentDate << std::endl;
+    
     std::cout << "\nAll Elections:" << std::endl;
     std::cout << "-------------" << std::endl;
     
@@ -83,11 +109,24 @@ Election* ElectionManager::getElection(std::string electionId) {
     return nullptr;
 }
 
-bool ElectionManager::addCandidateToElection(std::string electionId, std::string name, std::string party) {
+bool ElectionManager::addCandidateToElection(std::string electionId, std::string name, std::string party, std::string symbol) {
     Election* election = getElection(electionId);
     if (election != nullptr) {
+        // First add the candidate normally
         bool result = election->addCandidate(name, party);
+        
         if (result) {
+            // If a symbol was provided, update the last added candidate with the symbol
+            if (!symbol.empty()) {
+                int lastCandidateIndex = election->getCandidateCount() - 1;
+                if (lastCandidateIndex >= 0) {
+                    Candidate* candidate = election->getCandidate(lastCandidateIndex);
+                    if (candidate) {
+                        candidate->setPartySymbol(symbol);
+                    }
+                }
+            }
+            
             // Re-save the election with updated candidate data
             updateElectionFile(election);
         }
@@ -171,4 +210,35 @@ bool ElectionManager::electionExists(std::string electionId) {
         }
     }
     return false;
+}
+
+// Alias for getElection to match the function signature in VotingSystem.cpp
+Election* ElectionManager::getElectionById(const std::string& electionId) {
+    return getElection(electionId);
+}
+
+// Get IDs of all active/running elections
+std::vector<std::string> ElectionManager::getRunningElectionIds() {
+    std::vector<std::string> runningElectionIds;
+    
+    for (int i = 0; i < electionCount; i++) {
+        if (elections[i] != nullptr && elections[i]->getIsActive()) {
+            runningElectionIds.push_back(elections[i]->getElectionId());
+        }
+    }
+    
+    return runningElectionIds;
+}
+
+// Get IDs of all elections, regardless of status
+std::vector<std::string> ElectionManager::getAllElectionIds() {
+    std::vector<std::string> allElectionIds;
+    
+    for (int i = 0; i < electionCount; i++) {
+        if (elections[i] != nullptr) {
+            allElectionIds.push_back(elections[i]->getElectionId());
+        }
+    }
+    
+    return allElectionIds;
 }
