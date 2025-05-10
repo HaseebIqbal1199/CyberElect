@@ -3,6 +3,7 @@
 
 #include "Candidate.h"
 #include <string>
+#include <fstream>
 
 class Election {
 protected:
@@ -18,10 +19,10 @@ protected:
 public:
     Election();
     Election(std::string id, std::string name, std::string start, std::string end);
-    virtual ~Election();
-
-    std::string getElectionId() const;
+    virtual ~Election();    std::string getElectionId() const;
     std::string getElectionName() const;
+    std::string getStartDate() const;
+    std::string getEndDate() const;
     bool getIsActive() const;
     
     virtual bool startElection();
@@ -36,8 +37,14 @@ public:
     virtual void calculateResults() = 0;
     virtual void displayResults() = 0;
     
-    virtual void saveToFile() = 0;
-    virtual void loadFromFile(std::string electionId) = 0;
+    // File operations
+    virtual void saveToFile();
+    virtual void loadFromFile(std::string electionId);
+    
+    // Helper methods for unified file storage
+    virtual std::string getType() const = 0;
+    void saveData(std::ofstream& file);
+    void loadData(std::ifstream& file);
     
     bool candidateExists(std::string candidateId);
 };

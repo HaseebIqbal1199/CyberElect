@@ -15,8 +15,15 @@ public:
 
     void calculateResults() override;
     void displayResults() override;
-    void saveToFile() override;
-    void loadFromFile(std::string electionId) override;
+    
+    // Override getType to identify this election type
+    std::string getType() const override { return "national"; }
+    
+    // Type-specific data methods
+    std::string getCountry() const { return country; }
+    int getRegions() const { return regions; }
+    void setCountry(const std::string& c) { country = c; }
+    void setRegions(int r) { regions = r; }
 };
 
 #endif // NATIONAL_ELECTION_H

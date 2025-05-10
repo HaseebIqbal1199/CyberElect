@@ -14,8 +14,13 @@ public:
 
     void calculateResults() override;
     void displayResults() override;
-    void saveToFile() override;
-    void loadFromFile(std::string electionId) override;
+    
+    // Override getType to identify this election type
+    std::string getType() const override { return "local"; }
+    
+    // Type-specific data methods
+    std::string getLocality() const { return locality; }
+    void setLocality(const std::string& loc) { locality = loc; }
 };
 
 #endif // LOCAL_ELECTION_H

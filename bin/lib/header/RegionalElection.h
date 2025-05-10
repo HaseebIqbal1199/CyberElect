@@ -14,8 +14,13 @@ public:
 
     void calculateResults() override;
     void displayResults() override;
-    void saveToFile() override;
-    void loadFromFile(std::string electionId) override;
+    
+    // Override getType to identify this election type
+    std::string getType() const override { return "regional"; }
+    
+    // Type-specific data methods
+    std::string getRegion() const { return region; }
+    void setRegion(const std::string& reg) { region = reg; }
 };
 
 #endif // REGIONAL_ELECTION_H

@@ -24,24 +24,11 @@ void Candidate::displayInfo() const {
          << " | Votes: " << voteCount << endl;
 }
 
+// These methods are now deprecated as candidate data is stored in the unified elections file
 void Candidate::saveToFile(string electionId) {
-    ofstream file("data/candidates/" + electionId + "_" + candidateId + ".txt");
-    if (file.is_open()) {
-        file << candidateId << endl;
-        file << name << endl;
-        file << partyAffiliation << endl;
-        file << voteCount << endl;
-        file.close();
-    }
+    // Method removed - candidate data is now stored in the unified elections file
 }
 
 void Candidate::loadFromFile(string electionId, string candId) {
-    ifstream file("data/candidates/" + electionId + "_" + candId + ".txt");
-    if (file.is_open()) {
-        getline(file, candidateId);
-        getline(file, name);
-        getline(file, partyAffiliation);
-        file >> voteCount;
-        file.close();
-    }
+    // Method removed - candidate data is now loaded from the unified elections file
 }

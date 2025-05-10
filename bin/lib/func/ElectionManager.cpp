@@ -1,6 +1,9 @@
 #include "../header/ElectionManager.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 ElectionManager::ElectionManager() : electionCount(0) {
     for (int i = 0; i < MAX_ELECTIONS; i++) {
@@ -37,6 +40,9 @@ bool ElectionManager::createElection(std::string type, std::string name, std::st
     else {
         return false;
     }
+    
+    // Save the newly created election to the unified file
+    elections[electionCount]->saveToFile();
     
     electionCount++;
     return true;
@@ -80,9 +86,37 @@ Election* ElectionManager::getElection(std::string electionId) {
 bool ElectionManager::addCandidateToElection(std::string electionId, std::string name, std::string party) {
     Election* election = getElection(electionId);
     if (election != nullptr) {
-        return election->addCandidate(name, party);
+        bool result = election->addCandidate(name, party);
+        if (result) {
+            // Re-save the election with updated candidate data
+            updateElectionFile(election);
+        }
+        return result;
     }
     return false;
+}
+
+void ElectionManager::updateElectionFile(Election* election) {
+    // This is a simplified approach. In a real-world scenario, 
+    // we would need a more efficient way to update entries in the file.
+    
+    // First, load all elections
+    std::vector<Election*> allElections;
+    for (int i = 0; i < electionCount; i++) {
+        if (elections[i] != nullptr) {
+            allElections.push_back(elections[i]);
+        }
+    }
+    
+    // Clear the file and rewrite all elections
+    std::ofstream file("data/elections/entries.txt", std::ios::trunc);
+    if (file.is_open()) {
+        for (Election* e : allElections) {
+            file << e->getType() << std::endl;
+            e->saveData(file);
+        }
+        file.close();
+    }
 }
 
 void ElectionManager::viewElectionResults(std::string electionId) {
@@ -94,35 +128,39 @@ void ElectionManager::viewElectionResults(std::string electionId) {
 }
 
 void ElectionManager::loadAllElections() {
-    // This would load all elections from files in the data/elections directory
-    // For each file found, create appropriate election object and load its data
-    
-    // Example implementation (simplified):
-    std::ifstream localIndex("data/elections/local_index.txt");
-    std::ifstream nationalIndex("data/elections/national_index.txt");
-    std::ifstream regionalIndex("data/elections/regional_index.txt");
-    
-    std::string electionId;
-    
-    // Load local elections
-    while (localIndex >> electionId && electionCount < MAX_ELECTIONS) {
-        elections[electionCount] = new LocalElection();
-        elections[electionCount]->loadFromFile(electionId);
-        electionCount++;
-    }
-    
-    // Load national elections
-    while (nationalIndex >> electionId && electionCount < MAX_ELECTIONS) {
-        elections[electionCount] = new NationalElection();
-        elections[electionCount]->loadFromFile(electionId);
-        electionCount++;
-    }
-    
-    // Load regional elections
-    while (regionalIndex >> electionId && electionCount < MAX_ELECTIONS) {
-        elections[electionCount] = new RegionalElection();
-        elections[electionCount]->loadFromFile(electionId);
-        electionCount++;
+    // Load all elections from the unified file
+    std::ifstream file("data/elections/entries.txt");
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line) && electionCount < MAX_ELECTIONS) {
+            std::string type = line;
+            std::string tempId;
+            
+            // Read the ID to check what type of election it is
+            std::streampos pos = file.tellg();  // Save current position
+            std::getline(file, tempId);
+            file.seekg(pos);  // Go back to start of ID line
+            
+            // Create the appropriate election type
+            if (type == "local") {
+                elections[electionCount] = new LocalElection();
+            }
+            else if (type == "national") {
+                elections[electionCount] = new NationalElection();
+            }
+            else if (type == "regional") {
+                elections[electionCount] = new RegionalElection();
+            }
+            else {
+                // Skip this entry if unknown type
+                continue;
+            }
+            
+            // Load the election data
+            elections[electionCount]->loadData(file);
+            electionCount++;
+        }
+        file.close();
     }
 }
 

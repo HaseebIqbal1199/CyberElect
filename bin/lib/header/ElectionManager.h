@@ -6,12 +6,16 @@
 #include "NationalElection.h"
 #include "RegionalElection.h"
 #include <string>
+#include <vector>
 
 class ElectionManager {
 private:
     static const int MAX_ELECTIONS = 20;
     Election* elections[MAX_ELECTIONS];
     int electionCount;
+    
+    // Helper method to update an election in the unified file
+    void updateElectionFile(Election* election);
 
 public:
     ElectionManager();

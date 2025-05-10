@@ -1,0 +1,14 @@
+local
+E1
+president
+2025-05-7
+2025-05-8
+Inactive
+0
+national
+E2
+mayor
+2025-05-8
+2025-05-9
+Inactive
+0
