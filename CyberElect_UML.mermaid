@@ -9,6 +9,217 @@ classDiagram
     Election <|-- NationalElection
     
     %% Composition relationships
+    Election *-- Candidate : contains
+    ElectionManager *-- Election : manages
+    VotingSystem *-- ElectionManager : contains
+    VotingSystem o-- User : references
+    
+    %% Utility relationships
+    VotingSystem ..> RemainingTime : uses
+    
+    %% Class definitions with attributes and methods
+    class User {
+        #string username
+        #string password
+        #string name
+        #string id
+        #string role
+        +User()
+        +User(string, string, string, string, string)
+        +~User()
+        +getUsername() string
+        +getPassword() string
+        +getName() string
+        +getID() string
+        +getRole() string
+        +authenticate(string, string) bool
+        +login()* bool
+        +saveToFile()* void
+        +loadFromFile(string)* void
+    }
+    
+    class Voter {
+        -bool hasVoted
+        -string votedElections[10]
+        -int votedElectionsCount
+        -string cnic
+        -string dateOfBirth
+        -string city
+        +Voter()
+        +Voter(string, string, string, string, string, string, string)
+        +login() bool
+        +viewElections() void
+        +castVote(string, string) bool
+        +checkVoteStatus(string) bool
+        +saveToFile() void
+        +loadFromFile(string) void
+        +getCNIC() string
+        +getDateOfBirth() string
+        +getCity() string
+        +setCNIC(string) void
+        +setDateOfBirth(string) void
+        +setCity(string) void
+        +hasVotedInElection(string) bool
+        +addVotedElection(string) void
+    }
+    
+    class Administrator {
+        +Administrator()
+        +Administrator(string, string, string, string)
+        +login() bool
+        +createElection(string) void
+        +addCandidate(string, string, string) void
+        +viewResults(string) void
+        +viewAllElections() void
+        +saveToFile() void
+        +loadFromFile(string) void
+    }
+    
+    class Election {
+        #string electionId
+        #string electionName
+        #string startDate
+        #string endDate
+        #bool isActive
+        #int candidateCount
+        #static MAX_CANDIDATES
+        #Candidate* candidates[]
+        +Election()
+        +Election(string, string, string, string)
+        +~Election()
+        +getElectionId() string
+        +getElectionName() string
+        +getStartDate() string
+        +getEndDate() string
+        +getIsActive() bool
+        +startElection() bool
+        +endElection() bool
+        +addCandidate(string, string) bool
+        +displayCandidates() void
+        +getCandidate(int) Candidate*
+        +getCandidateById(string) Candidate*
+        +getCandidateCount() int
+        +calculateResults()* void
+        +displayResults()* void
+        +saveToFile() void
+        +loadFromFile(string) void
+        +getType()* string
+        +saveData(ofstream&) void
+        +loadData(ifstream&) void
+        +candidateExists(string) bool
+    }
+    
+    class LocalElection {
+        -string locality
+        +LocalElection()
+        +LocalElection(string, string, string, string, string)
+        +calculateResults() void
+        +displayResults() void
+        +getType() string
+        +getLocality() string
+        +setLocality(string) void
+    }
+    
+    class RegionalElection {
+        -string region
+        +RegionalElection()
+        +RegionalElection(string, string, string, string, string)
+        +calculateResults() void
+        +displayResults() void
+        +getType() string
+        +getRegion() string
+        +setRegion(string) void
+    }
+    
+    class NationalElection {
+        -string country
+        -int regions
+        +NationalElection()
+        +NationalElection(string, string, string, string, string, int)
+        +calculateResults() void
+        +displayResults() void
+        +getType() string
+        +getCountry() string
+        +getRegions() int
+        +setCountry(string) void
+        +setRegions(int) void
+    }
+    
+    class Candidate {
+        -string candidateId
+        -string name
+        -string partyAffiliation
+        -string partySymbol
+        -int voteCount
+        +Candidate()
+        +Candidate(string, string, string, string)
+        +getCandidateId() string
+        +getName() string
+        +getPartyAffiliation() string
+        +getPartySymbol() string
+        +getVoteCount() int
+        +setPartySymbol(string) void
+        +incrementVotes() void
+        +displayInfo() void
+        +saveToFile(string) void
+        +loadFromFile(string, string) void
+    }
+    
+    class ElectionManager {
+        -static MAX_ELECTIONS
+        -Election* elections[]
+        -int electionCount
+        -updateElectionFile(Election*) void
+        +ElectionManager()
+        +~ElectionManager()
+        +createElection(string, string, string, string, string, int) bool
+        +displayActiveElections() void
+        +displayAllElections() void
+        +getElection(string) Election*
+        +getElectionById(string) Election*
+        +addCandidateToElection(string, string, string, string) bool
+        +viewElectionResults(string) void
+        +loadAllElections() void
+        +electionExists(string) bool
+        +updateElection(Election*) bool
+        +setElectionStatus(string, bool) bool
+        +getRunningElectionIds(string*, int, int&) void
+        +getAllElectionIds(string*, int, int&) void
+    }
+    
+    class VotingSystem {
+        -User* currentUser
+        +ElectionManager electionManager
+        +VotingSystem()
+        +~VotingSystem()
+        +registerVoter(string, string, string, string, string, string) bool
+        +registerAdmin(string, string, string) bool
+        +loginUser(string, string, string) bool
+        +logout() void
+        +createElection(string, string, string, string, string, int) bool
+        +startElection(string) bool
+        +endElection(string) bool
+        +addCandidate(string, string, string, string) bool
+        +viewResults(string) void
+        +viewAllElections() void
+        +viewElections() void
+        +displayRunningElections() void
+        +displayElectionInfo(string) void
+        +displayElectionSummary(string) void
+        +displayCandidateSummary(string, int) void
+        +displayLiveCountdown(string, int) void
+        +getRunningElectionIds(string*, int, int&) void
+        +getAllElectionIds(string*, int, int&) void
+        +getCandidateIndices(string, int*, int, int&) void
+        +castVote(string, string) bool
+        +hasVoted(string) bool
+    }
+    
+    class RemainingTime {
+        +int hours
+        +int minutes
+        +int seconds
+    }
     Election o-- "0..*" Candidate
     ElectionManager o-- "0..*" Election
     VotingSystem o-- ElectionManager

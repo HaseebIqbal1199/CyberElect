@@ -1,0 +1,280 @@
+# CyberElect - Secure Voting System
+# Final Project Report
+
+## Project Overview
+CyberElect is a comprehensive electronic voting system designed to facilitate secure, transparent, and efficient election processes. The system supports various types of elections, user roles, and voting mechanisms within a console-based interface.
+
+## System Architecture
+
+### Core Components
+
+1. **User Management System**
+   - Abstract User class with derived Voter and Administrator classes
+   - Authentication and authorization mechanisms
+   - Secure user credentials storage
+
+2. **Election Management System**
+   - Abstract Election class with specialized types (Local, Regional, National)
+   - Candidate management within elections
+   - Election lifecycle management (creation, starting, running, ending)
+
+3. **Voting System**
+   - Vote casting mechanisms
+   - Results calculation and display
+   - Integrity checks to prevent double voting
+
+4. **Time Utilities**
+   - Current date and time retrieval
+   - Remaining time calculations
+   - Election deadline management
+
+### Class Hierarchy
+
+#### User System
+- **User (Abstract Base Class)**
+  - Core attributes: username, password, name, id, role
+  - Authentication methods
+  - Abstract methods for persistence
+
+- **Voter (Derived Class)**
+  - Extends User with voting-specific attributes
+  - Tracks voted elections
+  - Maintains voter information (CNIC, DOB, city)
+
+- **Administrator (Derived Class)**
+  - Extends User with admin capabilities
+  - Election management functionality
+  - System oversight capabilities
+
+#### Election System
+- **Election (Abstract Base Class)**
+  - Core attributes: ID, name, start/end dates, active status
+  - Candidate management
+  - Abstract methods for result calculation
+
+- **LocalElection (Derived Class)**
+  - City/locality specific elections
+  - Local result calculations
+
+- **RegionalElection (Derived Class)**
+  - Province/state level elections
+  - Regional result calculations
+
+- **NationalElection (Derived Class)**
+  - Country-wide elections
+  - National result calculations with region tracking
+
+#### Support Classes
+- **Candidate**
+  - Candidate information (name, party, symbol)
+  - Vote counting
+  - Display mechanisms
+
+- **ElectionManager**
+  - Election collection management
+  - Creation and retrieval of elections
+  - Election status management
+
+- **VotingSystem**
+  - High-level system coordination
+  - User session management
+  - Integration of all subsystems
+
+## Key Features
+
+### User Management
+- Secure registration for voters and administrators
+- Authentication with username/password
+- Role-based access control
+- User profile management
+
+### Election Management
+- Support for multiple election types (Local, Regional, National)
+- Election lifecycle management (create, start, run, end)
+- Candidate registration and management
+- Results calculation and display
+
+### Voting Process
+- Intuitive menu-driven interface
+- Election browsing and selection
+- Candidate selection and vote casting
+- Prevention of double voting
+
+### Security Features
+- Password protection for all accounts
+- Voter verification through CNIC
+- Voter age verification (minimum 18 years)
+- Election integrity protection
+
+### Time Management
+- Real-time election status tracking
+- Countdown timers for active elections
+- Automatic date validation
+- Time-based election status changes
+
+## Technical Implementation
+
+### Data Storage
+- File-based persistence using text files
+- Structured directory organization
+- Separate storage for user and election data
+
+### User Interface
+- Console-based menu system
+- Color-coded output for improved readability
+- Clear navigation with numbered options
+- Visual feedback for actions
+
+### Code Organization
+- Modular design with clear separation of concerns
+- Header files for declarations
+- Implementation files for definitions
+- Utility functions for common operations
+
+### Error Handling
+- Input validation for all user inputs
+- Graceful error handling and user feedback
+- System state consistency maintenance
+
+## System Workflow
+
+### Administrator Workflow
+1. **Login**: Administrators access the system with credentials
+2. **Election Management**:
+   - Create new elections (Local, Regional, National)
+   - Start elections when ready
+   - End elections when complete
+   - Add candidates to elections
+3. **Monitoring**:
+   - View election results
+   - View all elections and their status
+
+### Voter Workflow
+1. **Registration/Login**: Voters register with personal details or login
+2. **Election Browsing**: View available elections
+3. **Voting**:
+   - Select an active election
+   - View candidates
+   - Cast vote for preferred candidate
+4. **Result Viewing**: View results of completed elections
+
+### Public Access
+- View running elections without login
+- See election details and remaining time
+- View election results
+
+## Technical Details
+
+### Election Life Cycle
+1. **Creation**: Admin creates election with details
+2. **Configuration**: Admin adds candidates
+3. **Activation**: Admin starts the election
+4. **Running**: Voters can cast votes
+5. **Completion**: Admin ends the election
+6. **Results**: System calculates and displays results
+
+### Vote Processing
+1. Voter selects an election
+2. System verifies voter hasn't already voted
+3. Voter selects a candidate
+4. System records vote and updates candidate's count
+5. System marks voter as having voted in this election
+
+### Time Management
+1. System tracks current date/time
+2. Calculates remaining time for active elections
+3. Displays countdown for active elections
+4. Uses time information for election status decisions
+
+## Project Structure
+
+```
+CyberElect/
+├── main.cpp                  # Main program entry point
+├── build.bat                 # Build script for Windows
+├── clean.bat                 # Clean script for Windows
+├── CMakeLists.txt            # CMake configuration
+├── CyberElect_UML.mermaid    # UML diagram in Mermaid format
+├── bin/                      # Binary and library files
+│   └── lib/                  # Library files
+│       ├── func/             # Implementation files
+│       │   ├── Administrator.cpp
+│       │   ├── Candidate.cpp
+│       │   ├── Election.cpp
+│       │   ├── ElectionManager.cpp
+│       │   ├── LocalElection.cpp
+│       │   ├── NationalElection.cpp
+│       │   ├── RegionalElection.cpp
+│       │   ├── timeUtils.cpp
+│       │   ├── User.cpp
+│       │   ├── Voter.cpp
+│       │   └── VotingSystem.cpp
+│       └── header/           # Header files
+│           ├── Administrator.h
+│           ├── Candidate.h
+│           ├── Election.h
+│           ├── ElectionManager.h
+│           ├── LocalElection.h
+│           ├── NationalElection.h
+│           ├── RegionalElection.h
+│           ├── timeUtils.h
+│           ├── User.h
+│           ├── Voter.h
+│           └── VotingSystem.h
+└── data/                     # Data storage
+    ├── elections/            # Election data
+    │   └── entries.txt       # Election entries
+    └── Users/                # User data
+        └── Creds.txt         # User credentials
+```
+
+## User Interface Details
+
+### Main Menu
+- Voter Login
+- Administrator Login
+- Registration
+- View Running Elections
+- Exit System
+
+### Administrator Console
+- Create New Election
+- Start Election
+- End Election
+- Add Candidate
+- View Election Results
+- View All Elections
+- Logout
+
+### Voter Menu
+- View Elections
+- Cast Vote
+- Logout
+
+### Registration Menu
+- Register as Voter
+- Register as Administrator
+- Back to Main Menu
+
+## Visual Enhancements
+- Color-coded menus and notifications
+- Boxed headers for different sections
+- Progress indicators for operations
+- Animated exit sequence
+
+## Future Enhancements
+1. **Online Connectivity**: Move from file-based storage to cloud database
+2. **Mobile App Integration**: Develop mobile applications for voters
+3. **Advanced Security**: Implement encryption and blockchain for vote integrity
+4. **Analytics Dashboard**: Real-time voting statistics and trends
+5. **Multi-language Support**: Interface in multiple languages
+
+## Conclusion
+CyberElect provides a comprehensive solution for electronic voting with a focus on security, usability, and flexibility. The object-oriented design allows for easy extension and maintenance, while the modular architecture ensures separation of concerns. The system successfully demonstrates core concepts of object-oriented programming including inheritance, polymorphism, encapsulation, and abstraction.
+
+## Development Team
+- System Architecture & Integration: Muhammad Haseeb
+- User Management Module: Rafaqat
+- Voting & Candidate Module: Rehan
+
+May 11, 2025
