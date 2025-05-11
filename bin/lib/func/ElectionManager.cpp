@@ -3,7 +3,6 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <vector>
 #include <iomanip>
 #include <ctime>
 
@@ -239,30 +238,26 @@ Election* ElectionManager::getElectionById(const std::string& electionId) {
     return getElection(electionId);
 }
 
-// Get IDs of all active/running elections
-std::vector<std::string> ElectionManager::getRunningElectionIds() {
-    std::vector<std::string> runningElectionIds;
+// Get IDs of all active/running elections using arrays
+void ElectionManager::getRunningElectionIds(std::string* electionIds, int maxCount, int& count) {
+    count = 0;
     
-    for (int i = 0; i < electionCount; i++) {
+    for (int i = 0; i < electionCount && count < maxCount; i++) {
         if (elections[i] != nullptr && elections[i]->getIsActive()) {
-            runningElectionIds.push_back(elections[i]->getElectionId());
+            electionIds[count++] = elections[i]->getElectionId();
         }
     }
-    
-    return runningElectionIds;
 }
 
-// Get IDs of all elections, regardless of status
-std::vector<std::string> ElectionManager::getAllElectionIds() {
-    std::vector<std::string> allElectionIds;
+// Get IDs of all elections, regardless of status using arrays
+void ElectionManager::getAllElectionIds(std::string* electionIds, int maxCount, int& count) {
+    count = 0;
     
-    for (int i = 0; i < electionCount; i++) {
+    for (int i = 0; i < electionCount && count < maxCount; i++) {
         if (elections[i] != nullptr) {
-            allElectionIds.push_back(elections[i]->getElectionId());
+            electionIds[count++] = elections[i]->getElectionId();
         }
     }
-    
-    return allElectionIds;
 }
 
 // Public method to update an election

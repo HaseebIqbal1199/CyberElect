@@ -1,5 +1,6 @@
 // # by Rafaqat, Haseeb, Rehan
 #include "bin/lib/header/VotingSystem.h"
+#include "bin/lib/header/timeUtils.h"
 #include <iostream>
 #include <limits>
 #include <string>
@@ -8,8 +9,6 @@
 #include <ctime>
 #include <regex>
 #include <sstream>
-#include <vector>
-#include <tuple> // Added for std::tuple support
 
 using namespace std;
 
@@ -78,21 +77,21 @@ int calculateAge(const string& dateOfBirth) {
     if (currentMonth < birthMonth || (currentMonth == birthMonth && currentDay < birthDay)) {
         age--; // Not yet had birthday this year
     }
-    
-    return age;
+      return age;
 }
 
-string getCurrentDate() {
-    time_t now = time(nullptr);
-    tm* localTime = localtime(&now);
-    
-    stringstream ss;
-    ss << (localTime->tm_year + 1900) << "-" 
-       << setfill('0') << setw(2) << (localTime->tm_mon + 1) << "-" 
-       << setfill('0') << setw(2) << localTime->tm_mday;
-    
-    return ss.str();
-}
+// Use the function from timeUtils.h instead
+// string getCurrentDate() {
+//    time_t now = time(nullptr);
+//    tm* localTime = localtime(&now);
+//    
+//    stringstream ss;
+//    ss << (localTime->tm_year + 1900) << "-" 
+//       << setfill('0') << setw(2) << (localTime->tm_mon + 1) << "-" 
+//       << setfill('0') << setw(2) << localTime->tm_mday;
+//    
+//    return ss.str();
+// }
 
 // Set console text color
 void setColor(int textColor, int bgColor = BLACK) {
@@ -264,9 +263,12 @@ void voterMenu() {
                 resetColor();
                 
                 // Get list of running elections for menu selection
-                vector<string> activeElectionIds = votingSystem.getRunningElectionIds();
+                const int MAX_ELECTIONS = 20;
+                string activeElectionIds[MAX_ELECTIONS];
+                int electionCount = 0;
+                votingSystem.getRunningElectionIds(activeElectionIds, MAX_ELECTIONS, electionCount);
                 
-                if (activeElectionIds.empty()) {
+                if (electionCount == 0) {
                     setColor(LIGHTRED);
                     cout << " [!] No active elections available." << endl;
                     resetColor();
@@ -276,18 +278,18 @@ void voterMenu() {
                 }
                 
                 // Display elections as a numbered menu
-                for (int i = 0; i < activeElectionIds.size(); i++) {
+                for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(activeElectionIds[i]);
                 }
                 
-                cout << " [" << (activeElectionIds.size() + 1) << "] Back to menu" << endl << endl;
+                cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
                 
                 // Get user selection
-                int electionChoice = getValidatedInt(" Enter your choice (or " + to_string(activeElectionIds.size() + 1) + " to go back): ", 1, activeElectionIds.size() + 1);
+                int electionChoice = getValidatedInt(" Enter your choice (or " + to_string(electionCount + 1) + " to go back): ", 1, electionCount + 1);
                 
                 // Check if user wants to go back
-                if (electionChoice == activeElectionIds.size() + 1) {
+                if (electionChoice == electionCount + 1) {
                     break;
                 }
                 
@@ -332,9 +334,12 @@ void voterMenu() {
                 cout << endl;
                 
                 // Get list of running elections for menu selection
-                vector<string> electionIds = votingSystem.getRunningElectionIds();
+                const int MAX_ELECTIONS = 20;
+                string electionIds[MAX_ELECTIONS];
+                int electionCount = 0;
+                votingSystem.getRunningElectionIds(electionIds, MAX_ELECTIONS, electionCount);
                 
-                if (electionIds.empty()) {
+                if (electionCount == 0) {
                     setColor(LIGHTRED);
                     cout << " [!] No active elections are currently running." << endl;
                     resetColor();
@@ -349,18 +354,18 @@ void voterMenu() {
                 resetColor();
                 
                 // Display elections as a numbered menu
-                for (int i = 0; i < electionIds.size(); i++) {
+                for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(electionIds[i]);
                 }
                 
-                cout << " [" << (electionIds.size() + 1) << "] Back to menu" << endl << endl;
+                cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
                 
                 // Get user selection
-                int electionChoice = getValidatedInt(" Enter your choice: ", 1, electionIds.size() + 1);
+                int electionChoice = getValidatedInt(" Enter your choice: ", 1, electionCount + 1);
                 
                 // Check if user wants to go back
-                if (electionChoice == electionIds.size() + 1) {
+                if (electionChoice == electionCount + 1) {
                     break;
                 }
                 
@@ -385,9 +390,12 @@ void voterMenu() {
                 votingSystem.displayElectionInfo(electionId);
                 
                 // Get list of candidates for menu selection
-                vector<int> candidateIndices = votingSystem.getCandidateIndices(electionId);
+                const int MAX_CANDIDATES = 20;
+                int candidateIndices[MAX_CANDIDATES];
+                int candidateCount = 0;
+                votingSystem.getCandidateIndices(electionId, candidateIndices, MAX_CANDIDATES, candidateCount);
                 
-                if (candidateIndices.empty()) {
+                if (candidateCount == 0) {
                     setColor(LIGHTRED);
                     cout << " [!] No candidates are available in this election." << endl;
                     resetColor();
@@ -403,18 +411,18 @@ void voterMenu() {
                 resetColor();
                 
                 // Display candidates as a numbered menu
-                for (int i = 0; i < candidateIndices.size(); i++) {
+                for (int i = 0; i < candidateCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayCandidateSummary(electionId, candidateIndices[i]);
                 }
                 
-                cout << " [" << (candidateIndices.size() + 1) << "] Back to elections" << endl << endl;
+                cout << " [" << (candidateCount + 1) << "] Back to elections" << endl << endl;
                 
                 // Get user selection
-                int candidateChoice = getValidatedInt(" Enter your choice: ", 1, candidateIndices.size() + 1);
+                int candidateChoice = getValidatedInt(" Enter your choice: ", 1, candidateCount + 1);
                 
                 // Check if user wants to go back
-                if (candidateChoice == candidateIndices.size() + 1) {
+                if (candidateChoice == candidateCount + 1) {
                     // Go back to election selection
                     continue;
                 }
@@ -639,9 +647,12 @@ void adminMenu() {
                 resetColor();
                 
                 // Get list of all elections for menu selection
-                vector<string> electionIds = votingSystem.getAllElectionIds();
+                const int MAX_ELECTIONS = 20;
+                string electionIds[MAX_ELECTIONS];
+                int electionCount = 0;
+                votingSystem.getAllElectionIds(electionIds, MAX_ELECTIONS, electionCount);
                 
-                if (electionIds.empty()) {
+                if (electionCount == 0) {
                     setColor(LIGHTRED);
                     cout << " [!] No elections available." << endl;
                     resetColor();
@@ -651,18 +662,18 @@ void adminMenu() {
                 }
                 
                 // Display elections as a numbered menu
-                for (int i = 0; i < electionIds.size(); i++) {
+                for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(electionIds[i]);
                 }
                 
-                cout << " [" << (electionIds.size() + 1) << "] Back to menu" << endl << endl;
+                cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
                 
                 // Get user selection
-                int electionChoice = getValidatedInt(" Enter your choice: ", 1, electionIds.size() + 1);
+                int electionChoice = getValidatedInt(" Enter your choice: ", 1, electionCount + 1);
                 
                 // Check if user wants to go back
-                if (electionChoice == electionIds.size() + 1) {
+                if (electionChoice == electionCount + 1) {
                     break;
                 }
                 
@@ -683,6 +694,7 @@ void adminMenu() {
                 cin.get();
                 break;
             }
+            
             case 3: {
                 system("cls");
                 setColor(LIGHTGREEN);                printCentered("+--------------------------------------+", 80);
@@ -690,15 +702,19 @@ void adminMenu() {
                 printCentered("+--------------------------------------+", 80);
                 resetColor();
                 cout << endl;
-                  setColor(CYAN);
+                
+                setColor(CYAN);
                 printCentered("ACTIVE ELECTIONS", 80);
                 displaySeparator('-', 40, BLUE);
                 resetColor();
                 
                 // Get list of active elections for menu selection
-                vector<string> activeElectionIds = votingSystem.getRunningElectionIds();
+                const int MAX_ELECTIONS = 20;
+                string activeElectionIds[MAX_ELECTIONS];
+                int electionCount = 0;
+                votingSystem.getRunningElectionIds(activeElectionIds, MAX_ELECTIONS, electionCount);
                 
-                if (activeElectionIds.empty()) {
+                if (electionCount == 0) {
                     setColor(LIGHTRED);
                     cout << " [!] No active elections available." << endl;
                     resetColor();
@@ -708,18 +724,18 @@ void adminMenu() {
                 }
                 
                 // Display active elections as a numbered menu
-                for (int i = 0; i < activeElectionIds.size(); i++) {
+                for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(activeElectionIds[i]);
                 }
                 
-                cout << " [" << (activeElectionIds.size() + 1) << "] Back to menu" << endl << endl;
+                cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
                 
                 // Get user selection
-                int electionChoice = getValidatedInt(" Enter your choice: ", 1, activeElectionIds.size() + 1);
+                int electionChoice = getValidatedInt(" Enter your choice: ", 1, electionCount + 1);
                 
                 // Check if user wants to go back
-                if (electionChoice == activeElectionIds.size() + 1) {
+                if (electionChoice == electionCount + 1) {
                     break;
                 }
                 
@@ -740,6 +756,7 @@ void adminMenu() {
                 cin.get();
                 break;
             }
+            
             case 4: {
                 system("cls");
                 setColor(LIGHTGREEN);                printCentered("+--------------------------------------+", 80);
@@ -747,15 +764,19 @@ void adminMenu() {
                 printCentered("+--------------------------------------+", 80);
                 resetColor();
                 cout << endl;
-                  setColor(CYAN);
+                
+                setColor(CYAN);
                 printCentered("AVAILABLE ELECTIONS", 80);
                 displaySeparator('-', 40, BLUE);
                 resetColor();
                 
                 // Get list of all elections for menu selection
-                vector<string> electionIds = votingSystem.getAllElectionIds();
+                const int MAX_ELECTIONS = 20;
+                string electionIds[MAX_ELECTIONS];
+                int electionCount = 0;
+                votingSystem.getAllElectionIds(electionIds, MAX_ELECTIONS, electionCount);
                 
-                if (electionIds.empty()) {
+                if (electionCount == 0) {
                     setColor(LIGHTRED);
                     cout << " [!] No elections available." << endl;
                     resetColor();
@@ -765,18 +786,18 @@ void adminMenu() {
                 }
                 
                 // Display elections as a numbered menu
-                for (int i = 0; i < electionIds.size(); i++) {
+                for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(electionIds[i]);
                 }
                 
-                cout << " [" << (electionIds.size() + 1) << "] Back to menu" << endl << endl;
+                cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
                 
                 // Get user selection
-                int electionChoice = getValidatedInt(" Enter your choice: ", 1, electionIds.size() + 1);
+                int electionChoice = getValidatedInt(" Enter your choice: ", 1, electionCount + 1);
                 
                 // Check if user wants to go back
-                if (electionChoice == electionIds.size() + 1) {
+                if (electionChoice == electionCount + 1) {
                     break;
                 }
                 
@@ -809,15 +830,19 @@ void adminMenu() {
                 printCentered("+--------------------------------------+", 80);
                 resetColor();
                 cout << endl;
-                  setColor(CYAN);
+                
+                setColor(CYAN);
                 printCentered("AVAILABLE ELECTIONS", 80);
                 displaySeparator('-', 40, BLUE);
                 resetColor();
                 
                 // Get list of all elections for menu selection
-                vector<string> electionIds = votingSystem.getAllElectionIds();
+                const int MAX_ELECTIONS = 20;
+                string electionIds[MAX_ELECTIONS];
+                int electionCount = 0;
+                votingSystem.getAllElectionIds(electionIds, MAX_ELECTIONS, electionCount);
                 
-                if (electionIds.empty()) {
+                if (electionCount == 0) {
                     setColor(LIGHTRED);
                     cout << " [!] No elections available." << endl;
                     resetColor();
@@ -827,18 +852,18 @@ void adminMenu() {
                 }
                 
                 // Display elections as a numbered menu
-                for (int i = 0; i < electionIds.size(); i++) {
+                for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(electionIds[i]);
                 }
                 
-                cout << " [" << (electionIds.size() + 1) << "] Back to menu" << endl << endl;
+                cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
                 
                 // Get user selection
-                int electionChoice = getValidatedInt(" Enter your choice: ", 1, electionIds.size() + 1);
+                int electionChoice = getValidatedInt(" Enter your choice: ", 1, electionCount + 1);
                 
                 // Check if user wants to go back
-                if (electionChoice == electionIds.size() + 1) {
+                if (electionChoice == electionCount + 1) {
                     break;
                 }
                 
@@ -857,7 +882,9 @@ void adminMenu() {
                 cout << "\n Press Enter to continue...";
                 cin.get();
                 break;
-            }            case 6: {                
+            }
+            
+            case 6: {                
                 system("cls");
                 setColor(LIGHTGREEN);
                 printCentered("+--------------------------------------+", 80);
@@ -872,9 +899,12 @@ void adminMenu() {
                 resetColor();
                 
                 // Get list of all elections for menu selection
-                vector<string> electionIds = votingSystem.getAllElectionIds();
+                const int MAX_ELECTIONS = 20;
+                string electionIds[MAX_ELECTIONS];
+                int electionCount = 0;
+                votingSystem.getAllElectionIds(electionIds, MAX_ELECTIONS, electionCount);
                 
-                if (electionIds.empty()) {
+                if (electionCount == 0) {
                     setColor(LIGHTRED);
                     cout << " [!] No elections available." << endl;
                     resetColor();
@@ -884,18 +914,18 @@ void adminMenu() {
                 }
                 
                 // Display elections as a numbered menu
-                for (int i = 0; i < electionIds.size(); i++) {
+                for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(electionIds[i]);
                 }
                 
-                cout << " [" << (electionIds.size() + 1) << "] Back to menu" << endl << endl;
+                cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
                 
                 // Get user selection
-                int electionChoice = getValidatedInt(" Enter your choice (or " + to_string(electionIds.size() + 1) + " to go back): ", 1, electionIds.size() + 1);
+                int electionChoice = getValidatedInt(" Enter your choice (or " + to_string(electionCount + 1) + " to go back): ", 1, electionCount + 1);
                 
                 // Check if user wants to go back
-                if (electionChoice == electionIds.size() + 1) {
+                if (electionChoice == electionCount + 1) {
                     break;
                 }
                 
@@ -1059,97 +1089,11 @@ void registrationMenu() {
     }
 }
 
-// Calculate remaining time in hours, minutes, and seconds
-std::tuple<int, int, int> calculateRemainingTime(const string& endDate) {
-    // Parse the end date (YYYY-MM-DD format)
-    int endYear, endMonth, endDay;
-    char dash1, dash2;
-    stringstream ss(endDate);
-    ss >> endYear >> dash1 >> endMonth >> dash2 >> endDay;
-      // Get current time
-    time_t now = time(nullptr);
-    tm* localTime = localtime(&now);
-    int currentYear = localTime->tm_year + 1900;
-    int currentMonth = localTime->tm_mon + 1;
-    int currentDay = localTime->tm_mday;
-    int currentHour = localTime->tm_hour;
-    int currentMinute = localTime->tm_min;
-    int currentSecond = localTime->tm_sec;
-    
-    // Calculate time difference in hours and minutes
-    // Assuming end time is at end of day (23:59)
-    int totalDays = 0;
-    
-    if (endYear > currentYear || 
-        (endYear == currentYear && endMonth > currentMonth) ||
-        (endYear == currentYear && endMonth == currentMonth && endDay > currentDay)) {
-        
-        // Remaining days in current month
-        int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        if ((currentYear % 4 == 0 && currentYear % 100 != 0) || (currentYear % 400 == 0)) {
-            daysInMonth[2] = 29; // Leap year
-        }
-        
-        if (endYear == currentYear && endMonth == currentMonth) {
-            totalDays = endDay - currentDay;
-        } else {
-            // Days left in current month
-            totalDays += (daysInMonth[currentMonth] - currentDay);
-            
-            // Days in full months between
-            if (endYear == currentYear) {
-                for (int m = currentMonth + 1; m < endMonth; m++) {
-                    totalDays += daysInMonth[m];
-                }
-            } else {
-                // Remaining months in current year
-                for (int m = currentMonth + 1; m <= 12; m++) {
-                    totalDays += daysInMonth[m];
-                }
-                
-                // Full years in between
-                for (int y = currentYear + 1; y < endYear; y++) {
-                    totalDays += ((y % 4 == 0 && y % 100 != 0) || (y % 400 == 0)) ? 366 : 365;
-                }
-                
-                // Months in the final year
-                if ((endYear % 4 == 0 && endYear % 100 != 0) || (endYear % 400 == 0)) {
-                    daysInMonth[2] = 29; // Leap year for end year
-                } else {
-                    daysInMonth[2] = 28;
-                }
-                
-                for (int m = 1; m < endMonth; m++) {
-                    totalDays += daysInMonth[m];
-                }
-            }
-            
-            // Add days in final month
-            totalDays += endDay;
-        }
-          // Convert to hours, minutes, and seconds
-        // End time is 23:59:59, so calculate seconds left
-        int totalHours = (totalDays * 24) - currentHour - 1; // -1 because end at 23:59:59
-        int totalMinutes = 59 - currentMinute;
-        int totalSeconds = 59 - currentSecond;
-
-        // Handle carry for seconds/minutes
-        if (totalSeconds < 0) {
-            totalSeconds += 60;
-            totalMinutes--;
-        }
-        if (totalMinutes < 0) {
-            totalMinutes += 60;
-            totalHours--;
-        }
-        
-        // Return hours, minutes, and seconds remaining
-        return std::make_tuple(totalHours, totalMinutes, totalSeconds);
-    }
-    
-    // If end date is today or in the past, return 0
-    return std::make_tuple(0, 0, 0);
-}
+// Use the global function from timeUtils.h without redefining
+// RemainingTime calculateRemainingTime(const string& endDate) {
+//    // Call the global function from timeUtils.h
+//    return ::calculateRemainingTime(endDate);
+// }
 
 int main() {
     // Set console title and size
@@ -1231,14 +1175,16 @@ int main() {
                 setColor(LIGHTCYAN);                
                 printCentered("+--------------------------------------+", 80);
                 printCentered("|         RUNNING ELECTIONS            |", 80);
-                printCentered("+--------------------------------------+", 80);
-                resetColor();
+                printCentered("+--------------------------------------+", 80);                resetColor();
                 cout << endl;
                 
                 // Get list of running elections for menu selection
-                vector<string> activeElectionIds = votingSystem.getRunningElectionIds();
+                const int MAX_ELECTIONS = 20;
+                std::string activeElectionIds[MAX_ELECTIONS];
+                int electionCount = 0;
+                votingSystem.getRunningElectionIds(activeElectionIds, MAX_ELECTIONS, electionCount);
                 
-                if (activeElectionIds.empty()) {
+                if (electionCount == 0) {
                     setColor(LIGHTRED);
                     cout << " [!] No active elections available." << endl;
                     resetColor();
@@ -1256,20 +1202,19 @@ int main() {
                 printCentered("ACTIVE ELECTIONS", 80);
                 displaySeparator('-', 40, BLUE);
                 resetColor();
-                
-                // Display elections as a numbered menu
-                for (int i = 0; i < activeElectionIds.size(); i++) {
+                  // Display elections as a numbered menu
+                for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(activeElectionIds[i]);
                 }
                 
-                cout << " [" << (activeElectionIds.size() + 1) << "] Back to menu" << endl << endl;
+                cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
                 
                 // Get user selection
-                int electionChoice = getValidatedInt(" Enter your choice (or " + to_string(activeElectionIds.size() + 1) + " to go back): ", 1, activeElectionIds.size() + 1);
+                int electionChoice = getValidatedInt(" Enter your choice (or " + to_string(electionCount + 1) + " to go back): ", 1, electionCount + 1);
                 
                 // Check if user wants to go back
-                if (electionChoice == activeElectionIds.size() + 1) {
+                if (electionChoice == electionCount + 1) {
                     break;
                 }
                 

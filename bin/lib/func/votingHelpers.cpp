@@ -1,53 +1,46 @@
 // New helper methods for menu-based selection
 #include "../header/VotingSystem.h"
 #include <iostream>
-#include <vector>
 
 using namespace std;
 
-std::vector<std::string> VotingSystem::getRunningElectionIds() {
-    std::vector<std::string> activeElections;
+void VotingSystem::getRunningElectionIds(std::string* electionIds, int maxCount, int& count) {
+    count = 0;
     
     // Look through up to MAX_ELECTIONS (matches ElectionManager::MAX_ELECTIONS)
     const int MAX_POSSIBLE_ELECTIONS = 20;
-    for (int i = 0; i < MAX_POSSIBLE_ELECTIONS; i++) {
+    for (int i = 0; i < MAX_POSSIBLE_ELECTIONS && count < maxCount; i++) {
         Election* election = electionManager.getElection("E" + to_string(i+1));
         if (election && election->getIsActive()) {
-            activeElections.push_back(election->getElectionId());
+            electionIds[count++] = election->getElectionId();
         }
     }
-    
-    return activeElections;
 }
 
-std::vector<std::string> VotingSystem::getAllElectionIds() {
-    std::vector<std::string> allElections;
+void VotingSystem::getAllElectionIds(std::string* electionIds, int maxCount, int& count) {
+    count = 0;
     
     // Look through up to MAX_ELECTIONS (matches ElectionManager::MAX_ELECTIONS)
     const int MAX_POSSIBLE_ELECTIONS = 20;
-    for (int i = 0; i < MAX_POSSIBLE_ELECTIONS; i++) {
+    for (int i = 0; i < MAX_POSSIBLE_ELECTIONS && count < maxCount; i++) {
         Election* election = electionManager.getElection("E" + to_string(i+1));
         if (election) {
-            allElections.push_back(election->getElectionId());
+            electionIds[count++] = election->getElectionId();
         }
     }
-    
-    return allElections;
 }
 
-std::vector<int> VotingSystem::getCandidateIndices(const std::string& electionId) {
-    std::vector<int> indices;
+void VotingSystem::getCandidateIndices(const std::string& electionId, int* indices, int maxCount, int& count) {
+    count = 0;
     
     Election* election = electionManager.getElection(electionId);
     if (election) {
-        for (int i = 0; i < election->getCandidateCount(); i++) {
+        for (int i = 0; i < election->getCandidateCount() && count < maxCount; i++) {
             if (election->getCandidate(i) != nullptr) {
-                indices.push_back(i);
+                indices[count++] = i;
             }
         }
     }
-    
-    return indices;
 }
 
 void VotingSystem::displayElectionSummary(const std::string& electionId) {

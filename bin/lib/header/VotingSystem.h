@@ -30,13 +30,12 @@ public:
     
     // Helper function to display election information
     void displayElectionInfo(const std::string& electionId);
-    void displayElectionSummary(const std::string& electionId);
-    void displayCandidateSummary(const std::string& electionId, int candidateIndex);
+    void displayElectionSummary(const std::string& electionId);    void displayCandidateSummary(const std::string& electionId, int candidateIndex);
     void displayLiveCountdown(const std::string& electionId, int seconds = 10); // Live countdown timer
-      // New menu-based selection helpers
-    std::vector<std::string> getRunningElectionIds();
-    std::vector<std::string> getAllElectionIds();
-    std::vector<int> getCandidateIndices(const std::string& electionId);
+      // New menu-based selection helpers using arrays instead of vectors
+    void getRunningElectionIds(std::string* electionIds, int maxCount, int& count);
+    void getAllElectionIds(std::string* electionIds, int maxCount, int& count);
+    void getCandidateIndices(const std::string& electionId, int* indices, int maxCount, int& count);
     
     bool castVote(std::string electionId, std::string candidateId);
     bool hasVoted(std::string electionId);

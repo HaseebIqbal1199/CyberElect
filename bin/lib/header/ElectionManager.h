@@ -6,7 +6,6 @@
 #include "NationalElection.h"
 #include "RegionalElection.h"
 #include <string>
-#include <vector>
 
 class ElectionManager {
 private:
@@ -27,12 +26,11 @@ public:
     bool addCandidateToElection(std::string electionId, std::string name, std::string party, std::string symbol = "");
     void viewElectionResults(std::string electionId);
     void loadAllElections();
-    bool electionExists(std::string electionId);    bool updateElection(Election* election); // Public method to update an election
-    bool setElectionStatus(std::string electionId, bool isActive); // Method to update election status
+    bool electionExists(std::string electionId);    bool updateElection(Election* election); // Public method to update an election    bool setElectionStatus(std::string electionId, bool isActive); // Method to update election status
     
-    // Methods for accessing elections
-    std::vector<std::string> getRunningElectionIds();
-    std::vector<std::string> getAllElectionIds();
+    // Methods for accessing elections using arrays
+    void getRunningElectionIds(std::string* electionIds, int maxCount, int& count);
+    void getAllElectionIds(std::string* electionIds, int maxCount, int& count);
 };
 
 #endif // ELECTION_MANAGER_H
