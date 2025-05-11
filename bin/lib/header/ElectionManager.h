@@ -27,7 +27,8 @@ public:
     bool addCandidateToElection(std::string electionId, std::string name, std::string party, std::string symbol = "");
     void viewElectionResults(std::string electionId);
     void loadAllElections();
-    bool electionExists(std::string electionId);
+    bool electionExists(std::string electionId);    bool updateElection(Election* election); // Public method to update an election
+    bool setElectionStatus(std::string electionId, bool isActive); // Method to update election status
     
     // Methods for accessing elections
     std::vector<std::string> getRunningElectionIds();

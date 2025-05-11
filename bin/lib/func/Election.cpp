@@ -96,7 +96,23 @@ void Election::saveToFile() {
         file << getType() << std::endl;
         
         // Save common data
-        saveData(file);
+        file << electionId << std::endl;
+        file << electionName << std::endl;
+        file << startDate << std::endl;
+        file << endDate << std::endl;
+        file << (isActive ? "Active" : "Inactive") << std::endl;
+        file << candidateCount << std::endl;
+        
+        // Save candidate data
+        for (int i = 0; i < candidateCount; i++) {
+            if (candidates[i] != nullptr) {
+                file << candidates[i]->getCandidateId() << std::endl;
+                file << candidates[i]->getName() << std::endl;
+                file << candidates[i]->getPartyAffiliation() << std::endl;
+                file << candidates[i]->getPartySymbol() << std::endl;
+                file << candidates[i]->getVoteCount() << std::endl;
+            }
+        }
         
         file.close();
     }
@@ -148,13 +164,14 @@ void Election::loadFromFile(std::string electionId) {
 
 // Helper methods for unified file operations
 void Election::saveData(std::ofstream& file) {
-    // Common election data
-    file << electionId << std::endl;
-    file << electionName << std::endl;
-    file << startDate << std::endl;
-    file << endDate << std::endl;
-    file << (isActive ? "Active" : "Inactive") << std::endl;
-    file << candidateCount << std::endl;
+    // Common election data - write in a consistent format
+    file << getType() << std::endl;      // Type first
+    file << electionId << std::endl;     // Then ID
+    file << electionName << std::endl;    // Then name
+    file << startDate << std::endl;       // Then start date
+    file << endDate << std::endl;         // Then end date
+    file << (isActive ? "Active" : "Inactive") << std::endl;  // Then active status
+    file << candidateCount << std::endl;   // Then candidate count
       // Save candidate data
     for (int i = 0; i < candidateCount; i++) {
         if (candidates[i] != nullptr) {
@@ -177,7 +194,8 @@ void Election::loadData(std::ifstream& file) {
     std::string activeStr;
     std::getline(file, activeStr);
     isActive = (activeStr == "Active");
-      std::string countStr;
+    
+    std::string countStr;
     std::getline(file, countStr);
     
     // Parse candidate count safely without using stoi

@@ -136,25 +136,47 @@ bool ElectionManager::addCandidateToElection(std::string electionId, std::string
 }
 
 void ElectionManager::updateElectionFile(Election* election) {
-    // This is a simplified approach. In a real-world scenario, 
-    // we would need a more efficient way to update entries in the file.
+    // This method rewrites the entire elections file with updated data
     
-    // First, load all elections
-    std::vector<Election*> allElections;
-    for (int i = 0; i < electionCount; i++) {
-        if (elections[i] != nullptr) {
-            allElections.push_back(elections[i]);
-        }
-    }
+    // Create a temporary file for writing
+    std::string tempFile = "data/elections/temp.txt";
+    std::ofstream outFile(tempFile);
     
-    // Clear the file and rewrite all elections
-    std::ofstream file("data/elections/entries.txt", std::ios::trunc);
-    if (file.is_open()) {
-        for (Election* e : allElections) {
-            file << e->getType() << std::endl;
-            e->saveData(file);
+    if (outFile.is_open()) {
+        // Write all elections to the temp file
+        for (int i = 0; i < electionCount; i++) {
+            if (elections[i] != nullptr) {
+                // Write type first (not part of saveData)
+                outFile << elections[i]->getType() << std::endl;
+                
+                // Write election data
+                outFile << elections[i]->getElectionId() << std::endl;
+                outFile << elections[i]->getElectionName() << std::endl;
+                outFile << elections[i]->getStartDate() << std::endl;
+                outFile << elections[i]->getEndDate() << std::endl;
+                outFile << (elections[i]->getIsActive() ? "Active" : "Inactive") << std::endl;
+                
+                // Write candidate info
+                int candidateCount = elections[i]->getCandidateCount();
+                outFile << candidateCount << std::endl;
+                
+                for (int j = 0; j < candidateCount; j++) {
+                    Candidate* candidate = elections[i]->getCandidate(j);
+                    if (candidate != nullptr) {
+                        outFile << candidate->getCandidateId() << std::endl;
+                        outFile << candidate->getName() << std::endl;
+                        outFile << candidate->getPartyAffiliation() << std::endl;
+                        outFile << candidate->getPartySymbol() << std::endl;
+                        outFile << candidate->getVoteCount() << std::endl;
+                    }
+                }
+            }
         }
-        file.close();
+          outFile.close();
+        
+        // Replace the original file with the temp file
+        std::remove("data/elections/entries.txt");
+        std::rename(tempFile.c_str(), "data/elections/entries.txt");
     }
 }
 
@@ -173,12 +195,6 @@ void ElectionManager::loadAllElections() {
         std::string line;
         while (std::getline(file, line) && electionCount < MAX_ELECTIONS) {
             std::string type = line;
-            std::string tempId;
-            
-            // Read the ID to check what type of election it is
-            std::streampos pos = file.tellg();  // Save current position
-            std::getline(file, tempId);
-            file.seekg(pos);  // Go back to start of ID line
             
             // Create the appropriate election type
             if (type == "local") {
@@ -192,6 +208,12 @@ void ElectionManager::loadAllElections() {
             }
             else {
                 // Skip this entry if unknown type
+                std::getline(file, line); // Skip ID
+                std::getline(file, line); // Skip name
+                std::getline(file, line); // Skip start date
+                std::getline(file, line); // Skip end date
+                std::getline(file, line); // Skip active status
+                std::getline(file, line); // Skip candidate count
                 continue;
             }
             
@@ -241,4 +263,30 @@ std::vector<std::string> ElectionManager::getAllElectionIds() {
     }
     
     return allElectionIds;
+}
+
+// Public method to update an election
+bool ElectionManager::updateElection(Election* election) {
+    if (election == nullptr || !electionExists(election->getElectionId())) {
+        return false;
+    }
+    
+    // Use the private method to update the election data in the file
+    updateElectionFile(election);
+    return true;
+}
+
+// Method to directly update an election's active status
+bool ElectionManager::setElectionStatus(std::string electionId, bool isActive) {
+    Election* election = getElection(electionId);
+    if (election != nullptr) {
+        if (isActive) {
+            election->startElection();
+        } else {
+            election->endElection();
+        }
+        updateElectionFile(election);
+        return true;
+    }
+    return false;
 }

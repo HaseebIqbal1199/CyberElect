@@ -1,2 +1,1 @@
-V1746904980,hi,hi,hi,voter,12345-1234567-1,2005-07-12,lahore,0
-A1746904987,mhi,mhi,mhi,admin,0
+A1746943702,mhi,mhi,mhi,admin,0

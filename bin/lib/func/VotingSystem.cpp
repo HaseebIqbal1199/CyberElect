@@ -50,7 +50,8 @@ static std::tuple<int, int, int> calculateRemainingTime(const std::string& endDa
     char dash1, dash2;
     std::stringstream ss(endDate);
     ss >> endYear >> dash1 >> endMonth >> dash2 >> endDay;
-      // Get current time
+    
+    // Get current time
     time_t now = time(nullptr);
     tm* localTime = localtime(&now);
     int currentYear = localTime->tm_year + 1900;
@@ -64,7 +65,6 @@ static std::tuple<int, int, int> calculateRemainingTime(const std::string& endDa
     // Assuming end time is at end of day (23:59:59)
     int totalDays = 0;
     
-    // Check if the end date is in the future
     if (endYear > currentYear || 
         (endYear == currentYear && endMonth > currentMonth) ||
         (endYear == currentYear && endMonth == currentMonth && endDay > currentDay)) {
@@ -123,12 +123,12 @@ static std::tuple<int, int, int> calculateRemainingTime(const std::string& endDa
         if (totalSeconds < 0) {
             totalSeconds += 60;
             totalMinutes--;
-        }        if (totalMinutes < 0) {
+        }
+        if (totalMinutes < 0) {
             totalMinutes += 60;
             totalHours--;
         }
-        
-        // Return hours, minutes, and seconds remaining
+          // Return hours, minutes, and seconds remaining
         return std::make_tuple(totalHours, totalMinutes, totalSeconds);
     }
     
@@ -160,6 +160,19 @@ static std::string getCurrentTime() {
        << std::setfill('0') << std::setw(2) << localTime->tm_sec;
     
     return ss.str();
+}
+
+// Helper function to update remaining time display
+static void updateRemainingTimeDisplay(const std::string& electionId, const std::string& endDate) {
+    auto [hours, minutes, seconds] = calculateRemainingTime(endDate);
+    
+    std::cout << "\rCurrent Time: " << getCurrentTime() 
+              << " | Remaining: " << std::setfill('0') << std::setw(2) << hours << ":" 
+              << std::setfill('0') << std::setw(2) << minutes << ":" 
+              << std::setfill('0') << std::setw(2) << seconds << " " << std::flush;
+              
+    // Sleep for 1 second
+    Sleep(1000);
 }
 
 VotingSystem::VotingSystem() : currentUser(nullptr) {}
@@ -416,25 +429,11 @@ bool VotingSystem::addCandidate(string electionId, string name, string partyAffi
 }
 
 bool VotingSystem::startElection(string electionId) {
-    Election* election = electionManager.getElection(electionId);
-    if (election != nullptr && !election->getIsActive()) {
-        election->startElection();
-        // Update the election data in the file
-        election->saveToFile();
-        return true;
-    }
-    return false;
+    return electionManager.setElectionStatus(electionId, true);
 }
 
 bool VotingSystem::endElection(string electionId) {
-    Election* election = electionManager.getElection(electionId);
-    if (election != nullptr && election->getIsActive()) {
-        election->endElection();
-        // Update the election data in the file
-        election->saveToFile();
-        return true;
-    }
-    return false;
+    return electionManager.setElectionStatus(electionId, false);
 }
 
 void VotingSystem::viewResults(string electionId) {
@@ -570,8 +569,7 @@ bool VotingSystem::castVote(string electionId, string candidateId) {
         cout << "Candidate not found!" << endl;
         return false;
     }
-    
-    // Cast the vote
+      // Cast the vote
     candidate->incrementVotes();
     
     // Record that this voter has voted
@@ -581,8 +579,8 @@ bool VotingSystem::castVote(string electionId, string candidateId) {
         voter->saveToFile();
     }
     
-    // Update the election file with the new vote count
-    election->saveToFile();
+    // Update the election file with the new vote count using the proper method
+    electionManager.updateElection(election);
     
     cout << "Vote cast successfully!" << endl;
     return true;
