@@ -276,11 +276,20 @@ void voterMenu() {
                     cin.get();
                     break;
                 }
-                
-                // Display elections as a numbered menu
+                  // Display elections as a numbered menu
                 for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(activeElectionIds[i]);
+                    
+                    // Display remaining time for this election
+                    Election* election = votingSystem.electionManager.getElectionById(activeElectionIds[i]);
+                    if (election != nullptr && election->getIsActive()) {
+                        RemainingTime time = calculateRemainingTime(election->getEndDate());
+                        setColor(YELLOW);
+                        cout << "     Remaining Time: " << time.hours << " hours, " 
+                             << time.minutes << " minutes, " << time.seconds << " seconds" << endl;
+                        resetColor();
+                    }
                 }
                 
                 cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
@@ -722,11 +731,20 @@ void adminMenu() {
                     cin.get();
                     break;
                 }
-                
-                // Display active elections as a numbered menu
+                  // Display active elections as a numbered menu
                 for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(activeElectionIds[i]);
+                    
+                    // Display remaining time for this election
+                    Election* election = votingSystem.electionManager.getElectionById(activeElectionIds[i]);
+                    if (election != nullptr && election->getIsActive()) {
+                        RemainingTime time = calculateRemainingTime(election->getEndDate());
+                        setColor(YELLOW);
+                        cout << "     Remaining Time: " << time.hours << " hours, " 
+                             << time.minutes << " minutes, " << time.seconds << " seconds" << endl;
+                        resetColor();
+                    }
                 }
                 
                 cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
@@ -1177,8 +1195,7 @@ int main() {
                 printCentered("|         RUNNING ELECTIONS            |", 80);
                 printCentered("+--------------------------------------+", 80);                resetColor();
                 cout << endl;
-                
-                // Get list of running elections for menu selection
+                  // Get list of running elections for menu selection
                 const int MAX_ELECTIONS = 20;
                 std::string activeElectionIds[MAX_ELECTIONS];
                 int electionCount = 0;
@@ -1206,6 +1223,16 @@ int main() {
                 for (int i = 0; i < electionCount; i++) {
                     cout << " [" << (i + 1) << "] ";
                     votingSystem.displayElectionSummary(activeElectionIds[i]);
+                    
+                    // Display remaining time for this election
+                    Election* election = votingSystem.electionManager.getElectionById(activeElectionIds[i]);
+                    if (election != nullptr && election->getIsActive()) {
+                        RemainingTime time = calculateRemainingTime(election->getEndDate());
+                        setColor(YELLOW);
+                        cout << "     Remaining Time: " << time.hours << " hours, " 
+                             << time.minutes << " minutes, " << time.seconds << " seconds" << endl;
+                        resetColor();
+                    }
                 }
                 
                 cout << " [" << (electionCount + 1) << "] Back to menu" << endl << endl;
